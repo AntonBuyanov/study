@@ -9,3 +9,4 @@ puts "Высота треугольника равна"
 height = gets
 square = 1.0 / 2 * footing.to_i * height.to_i
 puts "Площадь треугольника #{square.to_i}"
+

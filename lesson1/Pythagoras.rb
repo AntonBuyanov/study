@@ -6,20 +6,21 @@
 # и сравнить ее значение в квадрате с суммой квадратов двух остальных сторон.
 # Если все 3 стороны равны, то треугольник равнобедренный и равносторонний, но не прямоугольный.
 
+side = []
 puts "Введите значение каждой стороны треугольника"
 a = gets.to_i
 b = gets.to_i
 c = gets.to_i
-
-if a > b && a > c && a**2 == b**2 + c**2
-puts "Треугольник является прямоугольным"
-elsif b > a && b > c && b**2 == a**2 + c**2
+side << a << b << c
+side_sort = side.sort
+cathet1 = side_sort[0]
+cathet2 = side_sort[1]
+hypotenuse = side_sort[2]
+if hypotenuse**2 == cathet1**2 + cathet2**2
   puts "Треугольник является прямоугольным"
-elsif c > a && c > b && c**2 == a**2 + b**2
-  puts "Треугольник является прямоугольным"
-elsif a == b && b == c
+elsif cathet1 == cathet2 && cathet1 == hypotenuse
   puts "Треугольник равносторонний"
-elsif a == b || a == c || b == c
+elsif cathet1 == cathet2 || cathet1 == hypotenuse || cathet2 == hypotenuse
   puts "Треугольник равнобедренный"
 else
   puts "Треугольник разносторонний"
