@@ -1,20 +1,23 @@
 class Station
   attr_accessor :name
+  attr_reader :train_list
   def initialize(name)
     @name = name
     @train_list = []
+    @train_type = Hash.new(0)
   end
 
   def train_add(train) # принять поезд
     @train_list << train
   end
 
-  def list_train # список поездов на станции
-    p "Список всех поездов на станции: #{@train_list}"
-  end
-
   def type_train(type) # список поездов по типу
     @train_list.select { |train| train.type =~ /#{type}/}
+  end
+
+  def type_train_count # количество поездов по типу
+    @train_list.each { |train| @train_type[train.type] += 1}
+    @train_type.each {|train, count| puts train + " " + count.to_s}
   end
 end
 
@@ -26,7 +29,7 @@ class Train
     @number = number
     @type = type
     @count_van = count_van
-    @i = 0
+    @index_station = 0
   end
 
   def speed_up(speed) # набирать скорость
@@ -35,14 +38,6 @@ class Train
 
   def stop # тормозить
     @speed = 0
-  end
-
-  def current_speed # узнать текущую скорость
-    @speed
-  end
-
-  def countvan # количество вагонов
-    @count_van
   end
 
   def add_van # прицепить вагон
@@ -54,74 +49,69 @@ class Train
   end
 
   def take_a_route(route) # назначить маршрут
-    @cur_station = route.full_station[0]
+    @cur_station = route.first_station
     @cur_station.train_add(self)
   end
 
-  def next_station(route)
-    @i += 1
-    @cur_station = route.full_station[@i]
-    @cur_station.train_add(self)
+  def next_station(route) # перемещение по станциям(вперед)
+    @index_station += 1
+    @cur_station = route.full_station[@index_station]
   end
 
-  def prev_station(route)
-    @i -= 1
-    @cur_station = route.full_station[@i]
-    @cur_station.train_add(self)
+  def prev_station(route) # перемещение по станциям(назад)
+    @index_station -= 1
+    @cur_station = route.full_station[@index_station]
+  end
+
+  def next_station_put(route)
+    @index_station += 1
+    puts @cur_station = route.full_station[@index_station]
   end
 end
 
 class Route
   attr_accessor :full_station
+  attr_reader :intermediate, :first_station
   def initialize (first_station, last_station)
     @first_station = first_station
     @last_station = last_station
-    @full_station = [first_station, last_station]
     @intermediate = []
+    @full_station = [@first_station, @intermediate, @last_station].flatten
   end
 
   def add_intermediate(station) # добавить промежуточную станцию
-    @full_station.insert(-2, station)
-    @intermediate << station.name
-    puts "Вы добавили промежуточную станцию, теперь полный маршрут: #{@full_station}"
-  end
-
-  def list_intermediate
-    puts "Список промежуточных станций: #{@intermediate.to_s}" # список промежуточных станций
+    @intermediate << station
+    puts "Вы добавили промежуточную станцию #{station.name}, теперь полный маршрут: #{full_station}"
   end
 
   def all_station
-    puts "Список всех станций: #{@full_station}" # станции маршрута
+    puts "Список всех станций: #{full_station}" # станции маршрута
   end
 
-  def del_intermediate
-    puts "Вы удалили промежуточную станцию #{@full_station[-2]}" # удалить промежуточную станцию
-    @full_station.delete_at(-2)
-    @intermediate.delete_at(-1)
-    puts "В маршруте остались города: #{@full_station}"
+  def del_intermediate(station)
+    puts "Вы удалили промежуточную станцию #{station.name}" # удалить промежуточную станцию
+    @intermediate.delete(station)
+    puts "В маршруте остались станции: #{full_station}"
   end
 end
 
 
 train1 = Train.new(101, "пассажирский", 13)
 train2 = Train.new(200, "грузовой", 30)
+train3 = Train.new(300, "грузовой", 9)
 station1 = Station.new("Butovo")
 station2 = Station.new("Sokolnikovo")
 station3 = Station.new("Perm")
 station4 = Station.new("Omsk")
-station2.list_train
-p station1.type_train("пассажирский")
-train1.speed_up(50)
-train1.stop
-
 abakan = Route.new(station1, station2)
+# station4.type_train_count
+# abakan.list_intermediate
+# train1.take_a_route(abakan)
+# abakan.add_intermediate(station4)
 abakan.add_intermediate(station3)
 abakan.add_intermediate(station4)
-abakan.list_intermediate
-abakan.all_station
-train1.take_a_route(abakan)
-# station1.list_train
-
-train1.next_station(abakan)
-
-p train1.cur_station
+# train1.take_a_route(abakan)
+# puts abakan.full_station
+# train1.next_station_put(abakan)
+abakan.full_station
+abakan.intermediate
