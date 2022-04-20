@@ -1,6 +1,5 @@
 class Station
-  attr_accessor :name
-  attr_reader :train_list
+  attr_reader :train_list, :name
   def initialize(name)
     @name = name
     @train_list = []
@@ -9,6 +8,10 @@ class Station
 
   def train_add(train) # принять поезд
     @train_list << train
+  end
+
+  def train_del(train)
+    @train_list.delete(train)
   end
 
   def type_train(type) # список поездов по типу
@@ -22,8 +25,8 @@ class Station
 end
 
 class Train
-  attr_accessor :speed
-  attr_reader :number, :type, :count_van, :cur_station
+  attr_accessor :speed, :route
+  attr_reader :number, :type, :count_van, :cur_station, :station
   def initialize(speed = 0, number, type, count_van)
     @speed = speed
     @number = number
@@ -49,49 +52,53 @@ class Train
   end
 
   def take_a_route(route) # назначить маршрут
+    self.route = route
     @cur_station = route.first_station
     @cur_station.train_add(self)
   end
 
   def next_station(route) # перемещение по станциям(вперед)
+    @cur_station.train_del(self)
     @index_station += 1
     @cur_station = route.full_station[@index_station]
+    @cur_station.train_add(self)
   end
 
   def prev_station(route) # перемещение по станциям(назад)
+    @cur_station.train_del(self)
     @index_station -= 1
     @cur_station = route.full_station[@index_station]
+    @cur_station.train_add(self)
   end
 
-  def next_station_put(route)
-    @index_station += 1
-    puts @cur_station = route.full_station[@index_station]
+  def info_station # проверить текущую, следующую, предыдущую станцию
+    puts cur_station
+    puts route.full_station[@index_station + 1]
+    puts route.full_station[@index_station - 1]
   end
 end
 
 class Route
-  attr_accessor :full_station
-  attr_reader :intermediate, :first_station
+  attr_reader :full_station, :first_station
   def initialize (first_station, last_station)
     @first_station = first_station
     @last_station = last_station
-    @intermediate = []
-    @full_station = [@first_station, @intermediate, @last_station].flatten
+    @full_station = [@first_station, @last_station]
   end
 
   def add_intermediate(station) # добавить промежуточную станцию
-    @intermediate << station
-    puts "Вы добавили промежуточную станцию #{station.name}, теперь полный маршрут: #{full_station}"
+    @full_station.insert(-2, station)
   end
 
-  def all_station
-    puts "Список всех станций: #{full_station}" # станции маршрута
+  def intermediate_station # список промежуточных станций
+    @full_station[1 .. -2]
   end
 
-  def del_intermediate(station)
-    puts "Вы удалили промежуточную станцию #{station.name}" # удалить промежуточную станцию
-    @intermediate.delete(station)
-    puts "В маршруте остались станции: #{full_station}"
+  def del_intermediate(station) # удалить промежуточную станцию
+    if [full_station.first, full_station.last].include?(station)
+      puts "Нельзя удалить первую и последнюю станции маршрута"
+      else @full_station.delete(station)
+    end
   end
 end
 
@@ -104,14 +111,9 @@ station2 = Station.new("Sokolnikovo")
 station3 = Station.new("Perm")
 station4 = Station.new("Omsk")
 abakan = Route.new(station1, station2)
-# station4.type_train_count
-# abakan.list_intermediate
-# train1.take_a_route(abakan)
-# abakan.add_intermediate(station4)
 abakan.add_intermediate(station3)
 abakan.add_intermediate(station4)
-# train1.take_a_route(abakan)
-# puts abakan.full_station
-# train1.next_station_put(abakan)
+train1.take_a_route(abakan)
 abakan.full_station
-abakan.intermediate
+train1.next_station(abakan)
+train1.info_station
