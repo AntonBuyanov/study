@@ -3,7 +3,6 @@ class Station
   def initialize(name)
     @name = name
     @train_list = []
-    @train_type = Hash.new(0)
   end
 
   def train_add(train) # принять поезд
@@ -18,9 +17,8 @@ class Station
     @train_list.select { |train| train.type =~ /#{type}/}
   end
 
-  def type_train_count # количество поездов по типу
-    @train_list.each { |train| @train_type[train.type] += 1}
-    @train_type.each {|train, count| puts train + " " + count.to_s}
+  def type_train_count(type) # количество поездов по типу
+    type_train(type).size
   end
 end
 
@@ -57,24 +55,24 @@ class Train
     @cur_station.train_add(self)
   end
 
-  def next_station(route) # перемещение по станциям(вперед)
+  def move_next_station(route) # перемещение по станциям(вперед)
     @cur_station.train_del(self)
     @index_station += 1
     @cur_station = route.full_station[@index_station]
-    @cur_station.train_add(self)
   end
 
-  def prev_station(route) # перемещение по станциям(назад)
+  def move_prev_station(route) # перемещение по станциям(назад)
     @cur_station.train_del(self)
     @index_station -= 1
     @cur_station = route.full_station[@index_station]
-    @cur_station.train_add(self)
   end
 
-  def info_station # проверить текущую, следующую, предыдущую станцию
-    puts cur_station
-    puts route.full_station[@index_station + 1]
-    puts route.full_station[@index_station - 1]
+  def info_next_station
+    route.full_station[@index_station + 1]
+  end
+
+  def info_prev_station
+    route.full_station[@index_station - 1]
   end
 end
 
@@ -87,7 +85,8 @@ class Route
   end
 
   def add_intermediate(station) # добавить промежуточную станцию
-    @full_station.insert(-2, station)
+    # @full_station.insert(-2, station)
+    intermediate_station.push(station)
   end
 
   def intermediate_station # список промежуточных станций
@@ -115,5 +114,7 @@ abakan.add_intermediate(station3)
 abakan.add_intermediate(station4)
 train1.take_a_route(abakan)
 abakan.full_station
-train1.next_station(abakan)
-train1.info_station
+train1.move_next_station(abakan)
+station1.train_add(train1)
+station1.train_add(train2)
+station1.train_add(train3)
