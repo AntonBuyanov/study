@@ -1,10 +1,11 @@
 class RailwayStation
-  attr_reader :list_station, :list_route, :list_train
+  attr_reader :list_station, :list_route, :list_train, :list_van
 
   def initialize
     @list_station = []
     @list_route = []
     @list_train = []
+    @list_van = []
   end
 
   def menu
@@ -52,7 +53,7 @@ class RailwayStation
   def create_station
     puts "Введите название станции"
     name = gets.chomp
-    list_station << Station.new(name)
+    p @list_station << Station.new(name)
   end
 
   def create_train
@@ -109,36 +110,33 @@ class RailwayStation
   end
 
   def add_van
-    puts "Выберите вариант:
-1 - Добавить вагон к пассажирскому поезду
-2 - Добавить вагон к грузовому поезду"
-    option = gets.chomp
-    case option
-    when "1"
-      puts "Введите номер индекса поезда"
-      p @list_train
-      index_train = gets.chomp.to_i
-      train = @list_train[index_train]
-      train.add_van(PassengerVan.new)
-    when "2"
-      puts "Введите номер индекса поезда"
-      p @list_train
-      index_train = gets.chomp.to_i
-      train = @list_train[index_train]
-      train.add_van(@list_van << CargoVan.new)
+    @list_van << PassengerVan.new
+    @list_van << CargoVan.new
+    puts "Поезд: пассажирский/грузовой"
+    type = gets.chomp
+    train = type_train(type)
+    if type == "пассажирский"
+      train.add_van(type_van(type))
+      p list_train
+    elsif type == "грузовой"
+      train.add_van(type_van(type))
+      p list_train
+    else
+      puts "такого типа нет"
     end
   end
 
   def substract_van
-      puts "Введите номер индекса поезда"
-      p @list_train
-      index_train = gets.chomp.to_i
-      train = @list_train[index_train]
-      puts "Введите номер индекса вагона"
-      index_van = gets.chomp.to_i
-      van = train.van_list[index_van]
-      train.subtract_van(van)
-    end
+    puts "Введите номер индекса поезда"
+    p @list_train
+    index_train = gets.chomp.to_i
+    train = @list_train[index_train]
+    puts "Введите номер индекса вагона"
+    index_van = gets.chomp.to_i
+    van = train.van_list[index_van]
+    train.subtract_van(van)
+    p list_train
+  end
 
   def move_station
     puts "Введите индекс поезда"
@@ -167,5 +165,13 @@ class RailwayStation
 
   def name_station(name_station)
     @list_station.find {|n|n.name == name_station}
+  end
+
+  def type_train(type_train)
+    @list_train.find {|n|n.type == type_train}
+  end
+
+  def type_van(type_van)
+    @list_van.find {|n|n.type == type_van}
   end
 end
