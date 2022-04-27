@@ -53,7 +53,7 @@ class RailwayStation
   def create_station
     puts "Введите название станции"
     name = gets.chomp
-    p @list_station << Station.new(name)
+    @list_station << Station.new(name)
   end
 
   def create_train
@@ -62,9 +62,9 @@ class RailwayStation
     puts "Введите тип поезда (пассажирский, грузовой)"
     type = gets.chomp
     if type == "пассажирский"
-      @list_train << PassengerTrain.new(number)
+      @list_train << TrainPassenger.new(number)
     elsif type == "грузовой"
-      @list_train << CargoTrain.new(number)
+      @list_train << TrainCargo.new(number)
     else puts "Такого типа поезда нет"
     end
   end
@@ -110,19 +110,18 @@ class RailwayStation
   end
 
   def add_van
-    @list_van << PassengerVan.new
-    @list_van << CargoVan.new
-    puts "Поезд: пассажирский/грузовой"
-    type = gets.chomp
-    train = type_train(type)
-    if type == "пассажирский"
-      train.add_van(type_van(type))
-      p list_train
-    elsif type == "грузовой"
-      train.add_van(type_van(type))
-      p list_train
+    puts "Выберите поезд, к которому нужно прицепить вагон"
+    p @list_train
+    index_train = gets.chomp.to_i
+    train = @list_train[index_train]
+    if train.type == "пассажирский"
+      train.add_van(PassengerVan.new)
+      p train
+    elsif train.type == "грузовой"
+      train.add_van(CargoVan.new)
+      p train
     else
-      puts "такого типа нет"
+      puts "Невозможно прицепить вагон к такому типу поезда"
     end
   end
 
@@ -135,7 +134,6 @@ class RailwayStation
     index_van = gets.chomp.to_i
     van = train.van_list[index_van]
     train.subtract_van(van)
-    p list_train
   end
 
   def move_station
@@ -165,13 +163,5 @@ class RailwayStation
 
   def name_station(name_station)
     @list_station.find {|n|n.name == name_station}
-  end
-
-  def type_train(type_train)
-    @list_train.find {|n|n.type == type_train}
-  end
-
-  def type_van(type_van)
-    @list_van.find {|n|n.type == type_van}
   end
 end

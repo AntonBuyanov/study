@@ -6,10 +6,5 @@ class PassengerVan
   end
 end
 
-class CargoVan
-  attr_reader :type
-
-  def initialize
-    @type = "грузовой"
-  end
-end
+van1 = PassengerVan.new
+# p van1.type

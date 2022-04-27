@@ -15,7 +15,11 @@ class Train
   end
 
   def add_van(van)
+    if van.type == @type
     @van_list << van
+    else
+      puts "Типы вагона/поезда не соответствуют"
+    end
   end
 
   def subtract_van(van)
@@ -55,18 +59,3 @@ class Train
   end
 end
 
-class PassengerTrain < Train
-
-  def initialize(number)
-    super
-    @type = "пассажирский"
-  end
-end
-
-class CargoTrain < Train
-
-  def initialize(number)
-    super
-    @type = "грузовой"
-  end
-end
