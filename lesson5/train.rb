@@ -1,22 +1,23 @@
 class Train
   include InstanceCounter
   include NameCompany
-  attr_reader :speed, :number, :type, :route, :cur_station, :station, :van_list
+  attr_accessor :route
+  attr_reader :speed, :number, :type, :cur_station, :station, :van_list
 
   @@trains = []
 
   def self.find(number)
-    @@trains.find{|n|n.number == number}
+    @@trains.find{ |n| n.number == number}
   end
 
-    def initialize(number)
+  def initialize(number)
     @speed = 0
     @number = number
     @index_station = 0
     @van_list = []
     @@trains << self
     register_instance
-    end
+  end
 
   def stop
     @speed = 0
@@ -24,7 +25,7 @@ class Train
 
   def add_van(van)
     if van.type == @type
-    @van_list << van
+      @van_list << van
     else
       puts "Типы вагона/поезда не соответствуют"
     end

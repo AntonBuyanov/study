@@ -7,5 +7,3 @@ class PassengerVan
   end
 end
 
-van1 = PassengerVan.new
-# p van1.type

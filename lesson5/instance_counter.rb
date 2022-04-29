@@ -3,20 +3,19 @@ module InstanceCounter
     base.extend MethodClass
     base.include MethodInstance
   end
-end
 
-module MethodClass
-  attr_accessor :instances
+  module MethodClass
+    attr_writer :instances
 
-  def instances
-    @instances ||= 0
+    def instances
+      @instances || 0
+    end
   end
-end
 
-module MethodInstance
-
-  def register_instance
-    self.class.instances += 1
+  module MethodInstance
+    def register_instance
+      self.class.instances += 1
+    end
   end
 end
 
