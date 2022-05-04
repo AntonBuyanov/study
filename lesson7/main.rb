@@ -5,8 +5,8 @@ require_relative 'train'
 require_relative 'train_cargo'
 require_relative 'train_passenger'
 require_relative 'route'
-require_relative 'van_passenger'
-require_relative 'van_cargo'
+require_relative 'passenger_van'
+require_relative 'cargo_van'
 require_relative 'menu'
 
 test = RailwayStation.new
