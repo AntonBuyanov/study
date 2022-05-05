@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Клас Train может создавать экземпляры поездов. Каждый поезд имеет номер, который указывается при создании.
 # Может набирать скорость, тормозить, возвращать скорость, возвращать список вагонов, количество.
 # Может прицеплять/отцеплять вагоны.
@@ -10,18 +12,11 @@ class Train
 
   NUMBER_FORMAT = /^[а-я1-9]{3}(-)?[а-я1-9]{2}/i.freeze
 
-  @@trains = []
-
-  def self.find(number)
-    @@trains.find { |n| n.number == number }
-  end
-
   def initialize(number)
     @speed = 0
     @number = number
     @index_station = 0
     @van_list = []
-    @@trains << self
     register_instance
     validate!
   end
@@ -66,10 +61,6 @@ class Train
 
   def method_van(&block)
     van_list.each(&block)
-  end
-
-  def count_van
-    van_list.size
   end
 
   def valid?

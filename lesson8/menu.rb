@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Класс RailwayStation создает пользовательский текстовый интерфейс. С помощью него можно управлять всей системой
 # жд станции
 class RailwayStation
@@ -10,9 +12,7 @@ class RailwayStation
     @list_van = []
   end
 
-  def menu
-    loop do
-      puts "Выберите действие:
+  MENU = 'Выберите действие:
 1 - Создать станцию
 2 - Создать поезд
 3 - Создать маршрут
@@ -20,42 +20,25 @@ class RailwayStation
 5 - Назначить маршрут поезду
 6 - Добавить вагоны к поезду
 7 - Отцепить вагоны от поезда
-8 - Занять место (в пассажирском вагоне) / объем (в грузовом вагоне)
+8 - Занять место/объем в вагоне
 9 - Переместить поезд по маршруту вперед и назад
 10 - Посмотреть список вагонов у поезда
 11 - Посмотреть список поездов на станции
 12 - Просмотреть список станций и список поездов на станции
-закрыть - Выйти из программы"
-      option = gets.chomp
+закрыть - Выйти из программы'
 
-      case option
-      when '1'
-        create_station
-      when '2'
-        create_train
-      when '3'
-        create_route
-      when '4'
-        intermediate_station
-      when '5'
-        train_route
-      when '6'
-        add_van
-      when '7'
-        substract_van
-      when '8'
-        take_place_space
-      when '9'
-        move_station
-      when '10'
-        check_list_van
-      when '11'
-        check_list_train
-      when '12'
-        view_station_train
-      when 'закрыть'
-        break
-      end
+  def menu
+    menu =
+      { '1' => proc { create_station }, '2' => proc { create_train }, '3' => proc { create_route },
+        '4' => proc { intermediate_station }, '5' => proc { train_route }, '6' => proc { add_van },
+        '7' => proc { substract_van }, '8' => proc { take_place_space }, '9' => proc { move_station },
+        '10' => proc { check_list_van }, '11' => proc { check_list_train }, '12' => proc { view_station_train } }
+    loop do
+      puts MENU
+      option = gets.chomp
+      break if option == 'закрыть'
+
+      menu[option].call
     end
   end
 
@@ -92,9 +75,8 @@ class RailwayStation
   end
 
   def create_route
-    puts 'Введите первую станцию в маршруте'
+    puts 'Введите первую и вторую станцию в маршруте'
     first_station = gets.chomp
-    puts 'Введите вторую станцию в маршруте'
     last_station = gets.chomp
     @list_route << Route.new(name_station(first_station), name_station(last_station))
     puts "Создан маршрут: #{@list_route.last.first_station.name} - #{@list_route.last.last_station.name}"
@@ -109,16 +91,14 @@ class RailwayStation
 1 - Добавить промежуточную станцию
 2 - Удалить промежуточную станцию"
     option = gets.chomp
+    puts 'Введите название станции'
+    station = gets.chomp
     case option
     when '1'
-      puts 'Введите название станции'
-      station = gets.chomp
       route.add_intermediate(name_station(station))
       puts "Вы добавили промежуточную станцию #{station}, теперь полный маршрут: "
       route.full_station.each { |m| print m.name, '-' }
     when '2'
-      puts 'Введите название станции'
-      station = gets.chomp
       route.del_intermediate(name_station(station))
       puts "Вы добавили промежуточную станцию #{station}, теперь полный маршрут: "
       route.full_station.each { |m| print m.name, '-' }
@@ -174,10 +154,9 @@ class RailwayStation
 
   def take_place_space
     puts 'Выберите вагон'
-    van_list = @list_van[0]
-    van_list.each { |n| print n.number, '-', n.type, "\n" }
+    list_van.flatten.each { |n| print n.number, '-', n.type, "\n" }
     index_van = gets.chomp.to_i
-    van = van_list[index_van]
+    van = list_van.flatten[index_van]
     case van.type
     when 'пассажирский'
       van.take_the_place
@@ -201,21 +180,15 @@ class RailwayStation
     puts "Текущая станция: #{train.cur_station.name}, следующая: #{train.info_next_station.name},
 предыдущая: #{train.info_prev_station.name}"
     route = @list_route[index_route]
-    puts "Выберите действие:
-1 - Переместить вперед
-2 - Переместить назад"
+    puts 'Выберите действие: 1 - Переместить вперед, 2 - Переместить назад'
     option = gets.chomp
     case option
     when '1'
       train.move_next_station(route)
       puts 'Поезд перемещен на следующую станцию'
-      puts "Текущая станция: #{train.cur_station.name}, следующая: #{train.info_next_station.name},
-предыдущая: #{train.info_prev_station.name}"
     when '2'
       train.move_prev_station(route)
       puts 'Поезд перемещен на предыдущую станцию'
-      puts "Текущая станция: #{train.cur_station.name}, следующая: #{train.info_next_station.name},
-предыдущая: #{train.info_prev_station.name}"
     end
   end
 
@@ -226,13 +199,15 @@ class RailwayStation
     train = @list_train[index_train]
     case train.type
     when 'пассажирский'
-      train.method_van
-      puts "Номер вагона: #{n.number}, тип вагона: #{n.type}, количество свободных мест: #{n.place},
-количество занятых мест: #{n.place_take}"
+      train.method_van do |n|
+        puts "Номер вагона: #{n.number}, тип: #{n.type}, свободные места: #{n.place},
+занятые места: #{n.place_take}"
+      end
     when 'грузовой'
-      train.method_van
-      puts "Номер вагона: #{n.number}, тип вагона: #{n.type}, доступный объем: #{n.free_space},
+      train.method_van do |n|
+        puts "Номер вагона: #{n.number}, тип: #{n.type}, доступный объем: #{n.free_space},
 занятый объем: #{n.space_take}"
+      end
     else
       puts 'Нет информации по этому типу поезда'
     end
@@ -243,13 +218,15 @@ class RailwayStation
     puts 'Выберите станцию, введите название:'
     station = gets.chomp
     name_station(station).method_train do |n|
-      puts "Номер поезда: #{n.number}, тип: #{n.type}
-,количество вагонов: #{n.count_van}"
+      puts "номер поезда: #{n.number}, тип: #{n.type} ,количество вагонов: #{n.van_list.size}"
     end
   end
 
   def view_station_train
-    Station.all.each { |n| puts n.name, n.train_list }
+    Station.all.each do |n|
+      puts "Станция #{n.name}, поезда на станции:"
+      n.train_list_each
+    end
   end
 
   def name_station(name_station)

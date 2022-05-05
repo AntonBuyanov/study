@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Класс Station может создавать экземпляры станций. Имеет название, которое указывается при создании.
 # Может принимать поезда, возвращаь список поездов на станции, список по типу поездов.
 class Station
@@ -6,16 +8,9 @@ class Station
 
   NAME_FORMAT = /^[А-ЯA-Z][а-яA-Z]+/.freeze
 
-  @@stations = []
-
-  def self.all
-    @@stations
-  end
-
   def initialize(name)
     @name = name
     @train_list = []
-    @@stations << self
     register_instance
     validate!
   end
@@ -38,6 +33,10 @@ class Station
 
   def method_train(&block)
     train_list.each(&block)
+  end
+
+  def train_list_each
+    train_list.each { |n| print "Номер поезда: #{n.number}, тип: #{n.type} \n" }
   end
 
   def valid?

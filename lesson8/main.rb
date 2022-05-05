@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # подключение файлов
 require_relative 'instance_counter'
 require_relative 'company_name'
