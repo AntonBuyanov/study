@@ -115,7 +115,7 @@ class RailwayStation
     index_route = gets.chomp.to_i
     route = @list_route[index_route]
     train.take_a_route(route)
-    puts "Поезду под номером #{train.number} назначен маршрут #{route.first_station.name} - #{route.last_station.name}"
+    puts "Поезду №#{train.number} назначен маршрут #{route.first_station.name} - #{route.last_station.name}"
   end
 
   def add_van
@@ -128,12 +128,12 @@ class RailwayStation
       puts 'Введите общее количество мест в вагоне'
       place = gets.chomp.to_i
       @list_van << train.add_van(PassengerVan.new(place))
-      puts "К поезду #{train.number}-#{train.type} добавлен #{train.type} вагон"
+      puts "К поезду №#{train.number}-#{train.type} добавлен #{train.type} вагон"
     when 'грузовой'
       puts 'Введите количество общего объема грузового вагона'
       space = gets.chomp.to_i
       @list_van << train.add_van(CargoVan.new(space))
-      puts "К поезду #{train.number}-#{train.type} добавлен #{train.type} вагон"
+      puts "К поезду №#{train.number}-#{train.type} добавлен #{train.type} вагон"
     else
       puts 'Невозможно прицепить вагон к такому типу поезда'
     end
@@ -149,7 +149,7 @@ class RailwayStation
     index_van = gets.chomp.to_i
     van = train.van_list[index_van]
     train.subtract_van(van)
-    puts "От поезда #{train.number}-#{train.type} отцеплен #{van} вагон"
+    puts "От поезда №#{train.number}-#{train.type} отцеплен #{van.type} вагон №#{van.number}"
   end
 
   def take_place_space
@@ -160,12 +160,12 @@ class RailwayStation
     case van.type
     when 'пассажирский'
       van.take_the_place
-      puts "В вагоне под номером #{van.number} занято 1 место, свободных мест осталось: #{van.place}"
+      puts "В вагоне №#{van.number} занято 1 место, свободных мест осталось: #{van.place}"
     when 'грузовой'
       puts 'Введите количество объема, которое нужно занять'
       space = gets.chomp.to_i
       van.take_the_space(space)
-      puts "В вагоне под номером #{van.number} занято #{space} объема, свободного осталось: #{van.free_space}"
+      puts "В вагоне №#{van.number} занято #{space} объема, свободного осталось: #{van.free_space}"
     end
   end
 
@@ -200,13 +200,11 @@ class RailwayStation
     case train.type
     when 'пассажирский'
       train.method_van do |n|
-        puts "Номер вагона: #{n.number}, тип: #{n.type}, свободные места: #{n.place},
-занятые места: #{n.place_take}"
+        puts "Вагон №#{n.number}, тип: #{n.type}, свободные места: #{n.place}, занятые места: #{n.place_take}"
       end
     when 'грузовой'
       train.method_van do |n|
-        puts "Номер вагона: #{n.number}, тип: #{n.type}, доступный объем: #{n.free_space},
-занятый объем: #{n.space_take}"
+        puts "Вагон №#{n.number}, тип: #{n.type}, доступный объем: #{n.free_space}, занятый объем: #{n.space_take}"
       end
     else
       puts 'Нет информации по этому типу поезда'
